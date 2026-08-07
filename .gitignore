@@ -1,0 +1,27 @@
+# Environment / credentials
+.env
+*.env
+!.env.example
+
+# Database dumps and local DB files
+*.sql.bak
+*.dump
+*.frm
+*.ibd
+
+# Logs
+*.log
+logs/
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
