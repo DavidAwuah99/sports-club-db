@@ -25,3 +25,6 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local AI tooling config
+CLAUDE.md
