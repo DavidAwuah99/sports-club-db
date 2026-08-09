@@ -282,7 +282,7 @@ Phase 7 (`CREATE ROLE` / `GRANT`) secures the *database*, controlling what a con
 - **Yes** → 12 tables. Both requirements traceable to a table. App login works.
 - **No** → 11 tables. FR10 and NFR2 have no schema support; the app fakes login or hardcodes users.
 
-**Recommended: Yes.** Requirements traceability is graded, and an unimplementable requirement is a visible gap.
+**RESOLVED: Yes.** Requirements traceability is graded, and an unimplementable requirement is a visible gap.
 
 ---
 
@@ -298,7 +298,7 @@ Phase 7 (`CREATE ROLE` / `GRANT`) secures the *database*, controlling what a con
 
 Note this is **not** a normalization question. Nothing depends on `sport`, so storing it as text is not a transitive dependency. It is a data-quality and extensibility question — worth stating that distinction in the write-up, since it shows you know *why* you normalize rather than reflexively splitting every column out.
 
-**Recommended: SPORT lookup table**, on the strength of NFR5.
+**RESOLVED: SPORT lookup table**, on the strength of NFR5.
 
 ---
 
@@ -316,7 +316,7 @@ Limitation: bookings only in predefined blocks.
 
 **Option 2 — free times.** `start_time TIME`, `end_time TIME`. Realistic, but overlap is not a uniqueness problem — 09:00-11:00 and 10:00-12:00 conflict while being distinct values. UNIQUE cannot catch it. Requires a BEFORE INSERT/UPDATE trigger doing `NEW.start_time < existing.end_time AND NEW.end_time > existing.start_time`, and the trigger must also fire on UPDATE or it is trivially bypassed.
 
-**Recommended: Option 1.** On a five-day build, the business rule you can prove is worth more than the one you can demo. Samira and Ronald still have BR1 and the single-active-membership rule to write triggers for, so Phase 6b is not short of work.
+**RESOLVED: Option 1** (fixed time slots). On a five-day build, the business rule you can prove is worth more than the one you can demo. Samira and Ronald still have BR1 and the single-active-membership rule to write triggers for, so Phase 6b is not short of work.
 
 ---
 
@@ -327,7 +327,7 @@ Limitation: bookings only in predefined blocks.
 
 One caveat on composite: an athlete who leaves a team and rejoins cannot be re-inserted as a second row. The `is_active` flag handles this by toggling instead of re-inserting, which is arguably the better data model anyway.
 
-**Recommended: Composite PK.**
+**RESOLVED: Composite PK.**
 
 ---
 
@@ -345,14 +345,14 @@ Proposed per-FK policy:
 | TEAM → COACH | RESTRICT | Forces explicit reassignment before a coach is removed |
 | TEAM → SPORT | RESTRICT | (if D2 = lookup table) |
 | FACILITY_BOOKING → FACILITY | RESTRICT | Booking history survives facility removal |
-| FACILITY_BOOKING → TEAM | CASCADE | A disbanded team's future bookings should release |
+| FACILITY_BOOKING → TEAM | RESTRICT | Per the Phase 3 report (§3, §5): CASCADE is reserved for the two weak entities (TEAM_ROSTER, TEAM_COMPETITION) only. FACILITY_BOOKING has its own surrogate `booking_id`, making it a strong entity, so its FKs follow the RESTRICT-on-historical-data rule like FACILITY_BOOKING → FACILITY above. A team with booking rows must have those bookings reassigned or removed before it can be deleted. |
 | TEAM_ROSTER → TEAM / ATHLETE | CASCADE | Junction rows are meaningless without both parents |
 | TEAM_COMPETITION → TEAM / COMPETITION | CASCADE | Same |
 | APP_USER → COACH | SET NULL | Deleting a coach record should not delete the login |
 
 All `ON UPDATE CASCADE`, since surrogate keys should never change anyway.
 
-**Recommended: adopt as listed.** Approve or amend.
+**RESOLVED: adopt as listed**, with FACILITY_BOOKING → TEAM corrected to RESTRICT per the Phase 3 report — CASCADE is reserved for the two weak entities (TEAM_ROSTER, TEAM_COMPETITION) only.
 
 ---
 
@@ -360,7 +360,7 @@ All `ON UPDATE CASCADE`, since surrogate keys should never change anyway.
 
 DATE is simpler and enough for daily/monthly revenue reports. DATETIME captures time of day, which matters for same-day reconciliation and for ordering multiple payments on one date.
 
-**Recommended: DATETIME.** Aggregating a DATETIME down to a date is trivial; recovering a lost time is not.
+**RESOLVED: DATETIME.** Aggregating a DATETIME down to a date is trivial; recovering a lost time is not.
 
 ---
 
@@ -370,7 +370,7 @@ Competitions are frequently held at other clubs' grounds, which are not rows in 
 
 Options: `VARCHAR(100)` free text; or `facility_id` nullable FK **plus** `external_venue VARCHAR(100)` for away events.
 
-**Recommended: `VARCHAR(100)` free text.** The hybrid is more correct but adds a join and a CHECK constraint for one field, and your scope statement excludes multi-club support anyway.
+**RESOLVED: `VARCHAR(100)` free text.** The hybrid is more correct but adds a join and a CHECK constraint for one field, and your scope statement excludes multi-club support anyway.
 
 ---
 
@@ -382,7 +382,7 @@ Surrogates are stable, compact, index efficiently, and never need to change when
 
 Compromise if the display format matters: keep the INT PK, add a generated or application-formatted `athlete_code` for the UI.
 
-**Recommended: surrogate INT PKs**, with a display code only if the team wants one.
+**RESOLVED: surrogate INT PKs**, with a display code only if the team wants one.
 
 ---
 
@@ -447,11 +447,11 @@ Three of seven rules are enforced by structure alone. That ratio is the argument
 
 ## 6. Deliverables Checklist
 
-- [ ] D1–D8 resolved
+- [x] D1–D8 resolved
 - [ ] ER diagram updated to reflect C1–C4 (Phase 2 diagram is now out of date)
 - [ ] Data dictionary — this document, once decisions are filled in
 - [ ] Normalization narrative — §0, the 1NF and 3NF arguments
 - [ ] `schema/01_create_database.sql`
-- [ ] `schema/02_tables.sql`
+- [x] `schema/02_tables.sql`
 - [ ] `schema/03_indexes.sql`
 - [ ] Tag `v1-schema-locked` after merge
