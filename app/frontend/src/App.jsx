@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
+import RequireAuth from './components/auth/RequireAuth'
 import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
 import AthletesPage from './pages/AthletesPage'
 import AthleteDetailPage from './pages/AthleteDetailPage'
 import TeamsPage from './pages/TeamsPage'
@@ -14,11 +16,47 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/athletes" element={<AthletesPage />} />
-        <Route path="/athletes/:athleteId" element={<AthleteDetailPage />} />
-        <Route path="/teams" element={<TeamsPage />} />
-        <Route path="/teams/:teamId" element={<TeamDetailPage />} />
-        <Route path="/competitions" element={<CompetitionsPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/athletes"
+          element={
+            <RequireAuth>
+              <AthletesPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/athletes/:athleteId"
+          element={
+            <RequireAuth>
+              <AthleteDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/teams"
+          element={
+            <RequireAuth>
+              <TeamsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/teams/:teamId"
+          element={
+            <RequireAuth>
+              <TeamDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/competitions"
+          element={
+            <RequireAuth>
+              <CompetitionsPage />
+            </RequireAuth>
+          }
+        />
       </Routes>
       <Footer />
     </BrowserRouter>
