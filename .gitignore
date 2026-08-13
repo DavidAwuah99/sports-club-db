@@ -13,6 +13,9 @@
 *.log
 logs/
 
+# Local curl test artifacts
+cookies.txt
+
 # Dependencies
 node_modules/
 __pycache__/
