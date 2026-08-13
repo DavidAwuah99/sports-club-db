@@ -4,6 +4,7 @@ import com.dev.sports_club.dto.MembershipRequest;
 import com.dev.sports_club.dto.MembershipResponse;
 import com.dev.sports_club.entity.Membership;
 import com.dev.sports_club.entity.MembershipStatus;
+import com.dev.sports_club.exception.BusinessRuleViolationException;
 import com.dev.sports_club.exception.InvalidReferenceException;
 import com.dev.sports_club.repository.AthleteRepository;
 import com.dev.sports_club.repository.MembershipRepository;
@@ -36,9 +37,14 @@ public class MembershipService {
 
     public MembershipResponse create(MembershipRequest request) {
         validateReferences(request);
+        MembershipStatus status = request.getStatus() != null ? request.getStatus() : MembershipStatus.Active;
+        if (status == MembershipStatus.Active
+                && repository.existsByAthleteIdAndStatus(request.getAthleteId(), MembershipStatus.Active)) {
+            throw new BusinessRuleViolationException("An athlete cannot hold more than one active membership");
+        }
         Membership entity = new Membership();
         applyRequest(entity, request);
-        entity.setStatus(request.getStatus() != null ? request.getStatus() : MembershipStatus.Active);
+        entity.setStatus(status);
         return toResponse(repository.save(entity));
     }
 
@@ -46,9 +52,14 @@ public class MembershipService {
         validateReferences(request);
         Membership entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Membership not found: " + id));
+        MembershipStatus newStatus = request.getStatus() != null ? request.getStatus() : entity.getStatus();
+        if (newStatus == MembershipStatus.Active
+                && repository.existsByAthleteIdAndStatusAndMembershipIdNot(request.getAthleteId(), MembershipStatus.Active, id)) {
+            throw new BusinessRuleViolationException("An athlete cannot hold more than one active membership");
+        }
         applyRequest(entity, request);
         if (request.getStatus() != null) {
-            entity.setStatus(request.getStatus());
+            entity.setStatus(newStatus);
         }
         return toResponse(repository.save(entity));
     }
