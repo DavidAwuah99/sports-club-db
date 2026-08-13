@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,10 @@ public class FacilityBookingController {
     private final FacilityBookingService service;
 
     @GetMapping
-    public List<FacilityBookingResponse> findAll() {
+    public List<FacilityBookingResponse> findAll(@RequestParam(required = false) LocalDate date) {
+        if (date != null) {
+            return service.searchByDate(date);
+        }
         return service.findAll();
     }
 

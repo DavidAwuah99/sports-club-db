@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,6 +27,12 @@ public class FacilityBookingService {
 
     public List<FacilityBookingResponse> findAll() {
         return repository.findAll().stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public List<FacilityBookingResponse> searchByDate(LocalDate date) {
+        return repository.findByBookingDate(date).stream()
                 .map(this::toResponse)
                 .toList();
     }

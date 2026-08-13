@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface FacilityBookingRepository extends JpaRepository<FacilityBooking, Integer> {
@@ -14,4 +15,6 @@ public interface FacilityBookingRepository extends JpaRepository<FacilityBooking
 
     boolean existsByFacilityIdAndBookingDateAndTimeSlotAndBookingIdNot(
             Integer facilityId, LocalDate bookingDate, TimeSlot timeSlot, Integer bookingId);
+
+    List<FacilityBooking> findByBookingDate(LocalDate bookingDate);
 }

@@ -23,6 +23,12 @@ public class AthleteService {
                 .toList();
     }
 
+    public List<AthleteResponse> searchByLastName(String lastName) {
+        return repository.findByLastNameStartingWithIgnoreCase(lastName).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     public AthleteResponse findById(Integer id) {
         Athlete entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Athlete not found: " + id));

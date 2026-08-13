@@ -18,7 +18,10 @@ public class AthleteController {
     private final AthleteService service;
 
     @GetMapping
-    public List<AthleteResponse> findAll() {
+    public List<AthleteResponse> findAll(@RequestParam(required = false) String lastName) {
+        if (lastName != null && !lastName.isBlank()) {
+            return service.searchByLastName(lastName);
+        }
         return service.findAll();
     }
 

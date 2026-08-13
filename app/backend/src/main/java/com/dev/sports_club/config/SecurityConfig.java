@@ -90,6 +90,13 @@ public class SecurityConfig {
                         // user management: admin only, always
                         .requestMatchers("/api/users/**").hasRole("Admin")
 
+                        // reports: mirrors the source data's own access rules — membership/payment
+                        // reports follow the membership/payment pattern, booking report follows
+                        // the open-read pattern used for facility_booking itself. Read-only, no writes.
+                        .requestMatchers(HttpMethod.GET, "/api/reports/active-members").hasAnyRole("Admin", "FrontDesk")
+                        .requestMatchers(HttpMethod.GET, "/api/reports/outstanding-payments").hasAnyRole("Admin", "FrontDesk")
+                        .requestMatchers(HttpMethod.GET, "/api/reports/upcoming-bookings").authenticated()
+
                         .anyRequest().authenticated()
                 );
         return http.build();
