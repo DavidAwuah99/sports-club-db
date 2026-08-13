@@ -2,10 +2,13 @@ package com.dev.sports_club.service;
 
 import com.dev.sports_club.dto.TeamRosterRequest;
 import com.dev.sports_club.dto.TeamRosterResponse;
+import com.dev.sports_club.entity.MembershipStatus;
 import com.dev.sports_club.entity.TeamRoster;
 import com.dev.sports_club.entity.TeamRosterId;
+import com.dev.sports_club.exception.BusinessRuleViolationException;
 import com.dev.sports_club.exception.InvalidReferenceException;
 import com.dev.sports_club.repository.AthleteRepository;
+import com.dev.sports_club.repository.MembershipRepository;
 import com.dev.sports_club.repository.TeamRepository;
 import com.dev.sports_club.repository.TeamRosterRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,6 +25,7 @@ public class TeamRosterService {
     private final TeamRosterRepository repository;
     private final TeamRepository teamRepository;
     private final AthleteRepository athleteRepository;
+    private final MembershipRepository membershipRepository;
 
     public List<TeamRosterResponse> findAll() {
         return repository.findAll().stream()
@@ -38,6 +42,10 @@ public class TeamRosterService {
 
     public TeamRosterResponse create(TeamRosterRequest request) {
         validateReferences(request);
+        if (!membershipRepository.hasCurrentActiveMembership(request.getAthleteId(), MembershipStatus.Active)) {
+            throw new BusinessRuleViolationException(
+                    "Athlete requires a current active membership before joining a team");
+        }
         TeamRoster entity = new TeamRoster();
         entity.setId(new TeamRosterId(request.getTeamId(), request.getAthleteId()));
         entity.setDateJoined(request.getDateJoined() != null ? request.getDateJoined() : LocalDate.now());
