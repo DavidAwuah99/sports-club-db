@@ -16,3 +16,17 @@ export async function getAthleteById(athleteId) {
   const response = await apiClient.get(`/athletes/${athleteId}`)
   return response.data
 }
+
+export async function createAthlete(athlete) {
+  const response = await apiClient.post('/athletes', athlete)
+  return response.data
+}
+
+export async function updateAthlete(athleteId, athlete) {
+  const response = await apiClient.put(`/athletes/${athleteId}`, athlete)
+  return response.data
+}
+
+export async function deleteAthlete(athleteId) {
+  await apiClient.delete(`/athletes/${athleteId}`)
+}

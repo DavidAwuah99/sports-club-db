@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import AthletesPage from './pages/AthletesPage'
 import AthleteDetailPage from './pages/AthleteDetailPage'
+import AthleteFormPage from './pages/AthleteFormPage'
 import TeamsPage from './pages/TeamsPage'
 import TeamDetailPage from './pages/TeamDetailPage'
 import CompetitionsPage from './pages/CompetitionsPage'
@@ -26,10 +27,26 @@ function App() {
           }
         />
         <Route
+          path="/athletes/new"
+          element={
+            <RequireAuth>
+              <AthleteFormPage />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/athletes/:athleteId"
           element={
             <RequireAuth>
               <AthleteDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/athletes/:athleteId/edit"
+          element={
+            <RequireAuth>
+              <AthleteFormPage />
             </RequireAuth>
           }
         />
