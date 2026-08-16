@@ -1,11 +1,14 @@
 import apiClient, { USE_MOCKS } from './client'
 import { mockAthletes } from '../mocks/mockData'
 
-export async function getAthletes() {
+export async function getAthletes({ lastName, membershipStatus } = {}) {
   if (USE_MOCKS) {
     return mockAthletes
   }
-  const response = await apiClient.get('/athletes')
+  const params = {}
+  if (lastName) params.lastName = lastName
+  if (membershipStatus) params.membershipStatus = membershipStatus
+  const response = await apiClient.get('/athletes', { params })
   return response.data
 }
 
@@ -29,4 +32,9 @@ export async function updateAthlete(athleteId, athlete) {
 
 export async function deleteAthlete(athleteId) {
   await apiClient.delete(`/athletes/${athleteId}`)
+}
+
+export async function registerAthleteWithMembership(payload) {
+  const response = await apiClient.post('/athletes/register', payload)
+  return response.data
 }

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { createAthlete, getAthleteById, updateAthlete } from '../api/athletes'
+import PageHeader from '../components/ui/PageHeader'
+import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
 
 const emptyForm = {
   firstName: '',
@@ -61,10 +64,9 @@ function AthleteFormPage() {
   }
 
   return (
-    <div className="mx-auto mt-8 max-w-md p-4">
-      <h1 className="mb-4 text-2xl font-semibold">
-        {isEditing ? 'Edit Athlete' : 'Add Athlete'}
-      </h1>
+    <div>
+      <PageHeader title={isEditing ? 'Edit Athlete' : 'Add Athlete'} />
+      <Card className="max-w-md p-5">
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           name="firstName"
@@ -120,14 +122,11 @@ function AthleteFormPage() {
           required
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded bg-gray-900 px-3 py-2 text-white disabled:opacity-50"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? 'Saving…' : 'Save'}
-        </button>
+        </Button>
       </form>
+      </Card>
     </div>
   )
 }

@@ -1,18 +1,37 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getCompetitions } from '../api/competitions'
-import CompetitionList from '../components/competitions/CompetitionList'
+import PageHeader from '../components/ui/PageHeader'
+import Card from '../components/ui/Card'
+import DataTable from '../components/ui/DataTable'
+import Badge from '../components/ui/Badge'
+
+const COLUMNS = [
+  { key: 'compName', label: 'Competition' },
+  { key: 'level', label: 'Level', render: (row) => <Badge tone="blue">{row.level}</Badge> },
+  { key: 'compDate', label: 'Date' },
+  { key: 'venue', label: 'Venue', render: (row) => row.venue || '—' },
+]
 
 function CompetitionsPage() {
   const [competitions, setCompetitions] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     getCompetitions().then(setCompetitions)
   }, [])
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold">Competitions</h1>
-      <CompetitionList competitions={competitions} />
+    <div>
+      <PageHeader title="Competitions" subtitle="Upcoming and past competitions" />
+      <Card>
+        <DataTable
+          columns={COLUMNS}
+          rows={competitions}
+          onRowClick={(row) => navigate(`/competitions/${row.competitionId}`)}
+          emptyMessage="No competitions found."
+        />
+      </Card>
     </div>
   )
 }

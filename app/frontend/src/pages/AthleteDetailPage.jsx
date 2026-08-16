@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { deleteAthlete, getAthleteById } from '../api/athletes'
+import PageHeader from '../components/ui/PageHeader'
+import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
 
 function AthleteDetailPage() {
   const { athleteId } = useParams()
@@ -22,26 +25,33 @@ function AthleteDetailPage() {
     }
   }
 
-  if (!athlete) return <div className="p-4">Loading...</div>
+  if (!athlete) return <div>Loading...</div>
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold">
-        {athlete.firstName} {athlete.lastName}
-      </h1>
-      <p className="text-gray-500">{athlete.gender}</p>
-      <p className="text-gray-500">{athlete.email}</p>
-      <p className="text-gray-500">{athlete.phone}</p>
-      <p className="text-gray-500">Date of birth: {athlete.dateOfBirth}</p>
-      <p className="text-gray-500">Joined: {athlete.joinDate}</p>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+    <div>
+      <PageHeader title={`${athlete.firstName} ${athlete.lastName}`} subtitle={athlete.gender} />
+      <Card className="max-w-md space-y-2 p-5 text-sm">
+        <p>
+          <span className="font-medium text-gray-500">Email:</span> {athlete.email || '—'}
+        </p>
+        <p>
+          <span className="font-medium text-gray-500">Phone:</span> {athlete.phone}
+        </p>
+        <p>
+          <span className="font-medium text-gray-500">Date of birth:</span> {athlete.dateOfBirth}
+        </p>
+        <p>
+          <span className="font-medium text-gray-500">Joined:</span> {athlete.joinDate}
+        </p>
+      </Card>
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
       <div className="mt-4 flex gap-3">
-        <Link to={`/athletes/${athleteId}/edit`} className="rounded bg-gray-900 px-3 py-2 text-white">
+        <Button as={Link} to={`/athletes/${athleteId}/edit`}>
           Edit
-        </Link>
-        <button onClick={handleDelete} className="rounded border border-red-600 px-3 py-2 text-red-600">
+        </Button>
+        <Button variant="danger" onClick={handleDelete}>
           Delete
-        </button>
+        </Button>
       </div>
     </div>
   )

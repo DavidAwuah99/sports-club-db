@@ -3,6 +3,7 @@ package com.dev.sports_club.service;
 import com.dev.sports_club.dto.AthleteRequest;
 import com.dev.sports_club.dto.AthleteResponse;
 import com.dev.sports_club.entity.Athlete;
+import com.dev.sports_club.entity.MembershipStatus;
 import com.dev.sports_club.repository.AthleteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,12 @@ public class AthleteService {
 
     public List<AthleteResponse> searchByLastName(String lastName) {
         return repository.findByLastNameStartingWithIgnoreCase(lastName).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public List<AthleteResponse> searchByMembershipStatus(MembershipStatus status) {
+        return repository.findByMembershipStatus(status).stream()
                 .map(this::toResponse)
                 .toList();
     }

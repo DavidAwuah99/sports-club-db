@@ -2,6 +2,7 @@ package com.dev.sports_club.controller;
 
 import com.dev.sports_club.dto.AthleteRequest;
 import com.dev.sports_club.dto.AthleteResponse;
+import com.dev.sports_club.entity.MembershipStatus;
 import com.dev.sports_club.service.AthleteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,14 @@ public class AthleteController {
     private final AthleteService service;
 
     @GetMapping
-    public List<AthleteResponse> findAll(@RequestParam(required = false) String lastName) {
+    public List<AthleteResponse> findAll(
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) MembershipStatus membershipStatus) {
         if (lastName != null && !lastName.isBlank()) {
             return service.searchByLastName(lastName);
+        }
+        if (membershipStatus != null) {
+            return service.searchByMembershipStatus(membershipStatus);
         }
         return service.findAll();
     }
